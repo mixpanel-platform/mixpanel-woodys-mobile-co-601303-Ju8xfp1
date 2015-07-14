@@ -7,9 +7,36 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
+    <h1><img height="35" src="http://certifiedrestorationinc.com/wp-content/uploads/amazon.png"/><font size="9">mazonia</font><br><font size="3">Custom Report: View-to-Purchase Ratios by Item Category</font></h1>
     <script>
-      // Run queries and display results here
+      // Run queries and display results here\
+      var chartData = {}
+      var reportData = {}
+    $(document).ready(function() {
+      MP.api.segment("Purchase Item", "Item Category").done(function(results) {
+        for (var category in results.values()) {
+          var mpdata = MP.Data.inst(results.values()[category]);
+          chartData[category] = {}
+          chartData[category]["Purchases"] = mpdata.sum().values();
+        }
+        MP.api.segment("View Item", "Item Category").done(function(results) {
+          for (var category in results.values()) {
+            var mpdata = MP.Data.inst(results.values()[category]);
+            chartData[category]["Views"] = mpdata.sum().values();
+            chartData[category]["Views-to-Purchases Ratio"] = (chartData[category]["Views"]/chartData[category]["Purchases"]).toFixed(3)+" average views per purchase."
+          }
+          $('<div></div>').appendTo('body').MPTable({
+          data: chartData
+        })
+        })
+        
+        console.log(chartData)
+      })  
+        
+        
+    })
+      
+      
     </script>
   </body>
 </html>
